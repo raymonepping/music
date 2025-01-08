@@ -1,0 +1,171 @@
+// personalityTraits.js
+
+const cosineSimilarity = (vecA, vecB) => {
+    const dotProduct = vecA.reduce((sum, a, idx) => sum + a * vecB[idx], 0);
+    const magnitudeA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
+    const magnitudeB = Math.sqrt(vecB.reduce((sum, b) => sum + b * b, 0));
+    return dotProduct / (magnitudeA * magnitudeB);
+  };
+  
+  const moodDescriptions = {
+    "Anxious": "You tend to be cautious and may often contemplate uncertainties.",
+    "Bittersweet": "You appreciate the complexity of emotions that are both happy and sad.",
+    "Calm": "You have a serene disposition and value tranquility.",
+    "Curious": "You have a strong desire to explore and understand the world.",
+    "Dark": "You are drawn to the deeper and sometimes mysterious aspects of life.",
+    "Energetic": "You have a zest for life and embrace activities with enthusiasm.",
+    "Excited": "You approach new experiences with eagerness and anticipation.",
+    "Happy": "You possess a positive outlook and find joy in everyday moments.",
+    "Joyful": "You are often filled with delight and spread positivity to those around you.",
+    "Melancholy": "You are introspective and reflective, often pondering deeper meanings.",
+    "Nervous": "You might feel tense in uncertain situations but face them nonetheless.",
+    "Playful": "You approach life with a light-hearted and fun-loving attitude.",
+    "Reflective": "You spend time thinking deeply about life and your experiences.",
+    "Sad": "You are empathetic and deeply in touch with your emotions.",
+    "Somber": "You take things seriously and are thoughtful in your considerations.",
+    "Bittersweet": "You understand that joy and sorrow often intertwine, and you appreciate that complexity.",
+    // ... Add any additional moods as needed
+  };
+  
+  const genreDescriptions = {
+    "Alternative": "You appreciate music that's authentic and pushes boundaries.",
+    "Alternative Metal": "You enjoy a blend of heavy sounds with unconventional elements.",
+    "Dance Pop": "You like upbeat rhythms that make you want to move.",
+    "Grunge": "You're drawn to raw emotion and unpolished authenticity in music.",
+    "Hard Rock": "You enjoy powerful guitar riffs and strong vocals.",
+    "Nu-Metal": "You appreciate a fusion of genres and innovative sounds.",
+    "Pop": "You enjoy catchy melodies and songs that resonate with a wide audience.",
+    "Post Punk": "You are intrigued by experimental sounds and introspective lyrics.",
+    "Rock": "You are drawn to strong rhythms and expressive instrumentation.",
+    "Soul": "You value deep emotions and soulful expressions in music.",
+    "Synthpop": "You enjoy electronic sounds with nostalgic and modern touches.",
+    // ... Add any additional genres as needed
+  };
+  
+  const detectClosestVectors = (userVector, vectorSet, topN = 3) => {
+    const similarities = Object.entries(vectorSet).map(([key, vector]) => ({
+      key,
+      similarity: cosineSimilarity(userVector, vector),
+    }));
+    similarities.sort((a, b) => b.similarity - a.similarity);
+    return similarities.slice(0, topN);
+  };
+  
+  const generatePersonalityDescription = (closestMoods, closestGenres) => {
+    let description = "";
+  
+    // Describe moods
+    description += "Based on your mood vector, it appears that you are drawn to music that embodies emotions such as ";
+    description += closestMoods.map(mood => mood.key).join(", ") + ". ";
+    description += closestMoods.map(mood => moodDescriptions[mood.key]).join(' ');
+  
+    // Describe genres
+    description += "\n\nYour affinity for genres like ";
+    description += closestGenres.map(genre => genre.key).join(", ") + " indicates ";
+    description += closestGenres.map(genre => genreDescriptions[genre.key]).join(' ');
+  
+    // Summarize personality traits based on moods and genres
+    let personalityTraits = new Set();
+  
+    // Add traits based on moods
+    closestMoods.forEach(mood => {
+      switch (mood.key) {
+        case "Anxious":
+        case "Nervous":
+          personalityTraits.add("are cautious and thoughtful in your actions");
+          break;
+        case "Melancholy":
+        case "Reflective":
+        case "Somber":
+          personalityTraits.add("are introspective and value deep thinking");
+          break;
+        case "Energetic":
+        case "Excited":
+          personalityTraits.add("have a vibrant energy and enthusiasm for life");
+          break;
+        case "Playful":
+        case "Curious":
+          personalityTraits.add("enjoy exploring new ideas and experiences");
+          break;
+        case "Dark":
+          personalityTraits.add("are intrigued by the mysteries and complexities of life");
+          break;
+        case "Happy":
+        case "Joyful":
+          personalityTraits.add("have a positive outlook and spread joy to others");
+          break;
+        // Add more cases as needed
+      }
+    });
+  
+    // Add traits based on genres
+    closestGenres.forEach(genre => {
+      switch (genre.key) {
+        case "Alternative":
+        case "Post Punk":
+          personalityTraits.add("appreciate authenticity and non-conformity");
+          break;
+        case "Pop":
+        case "Dance Pop":
+          personalityTraits.add("enjoy connecting with widely relatable themes");
+          break;
+        case "Rock":
+        case "Hard Rock":
+          personalityTraits.add("are passionate and appreciate strong expressions");
+          break;
+        case "Soul":
+          personalityTraits.add("value emotional depth and genuine feelings");
+          break;
+        case "Synthpop":
+          personalityTraits.add("embrace both modernity and nostalgia");
+          break;
+        case "Grunge":
+          personalityTraits.add("are drawn to raw emotions and realism");
+          break;
+        case "Nu-Metal":
+          personalityTraits.add("enjoy innovation and blending different styles");
+          // Add more cases as needed
+      }
+    });
+  
+    // Compile personality traits into the description
+    description += "\n\nIn terms of personality, you might be someone who ";
+    description += Array.from(personalityTraits).join(", ") + ".";
+  
+    return description;
+  };
+  
+  const detectPersonalityChange = (previousVector, currentVector) => {
+    const valenceChange = currentVector[0] - previousVector[0];
+    const arousalChange = currentVector[1] - previousVector[1];
+    const dominanceChange = currentVector[2] - previousVector[2];
+  
+    const threshold = 0.2;
+  
+    let changes = [];
+  
+    if (Math.abs(valenceChange) > threshold) {
+      changes.push(`Your emotional tone has become ${valenceChange > 0 ? 'more positive' : 'more negative'}.`);
+    }
+  
+    if (Math.abs(arousalChange) > threshold) {
+      changes.push(`Your energy level has become ${arousalChange > 0 ? 'higher' : 'lower'}.`);
+    }
+  
+    if (Math.abs(dominanceChange) > threshold) {
+      changes.push(`Your sense of control has become ${dominanceChange > 0 ? 'stronger' : 'weaker'}.`);
+    }
+  
+    if (changes.length === 0) {
+      changes.push("Your personality traits appear consistent with previous sessions.");
+    }
+  
+    return changes.join(' ');
+  };
+  
+  module.exports = {
+    detectClosestVectors,
+    generatePersonalityDescription,
+    detectPersonalityChange,
+  };
+  
