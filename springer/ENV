@@ -1,0 +1,37 @@
+# Container name:
+CONTAINER_NAME=Springer
+
+JWT_SECRET=
+
+# Couchbase Connection               
+COUCHBASE_URL=couchbases://cb.xx.cloud.couchbase.com     # free tier
+
+# Couchbase credentials
+COUCHBASE_USERNAME=user
+COUCHBASE_PASSWORD=password
+
+# Couchbase bucket & defaults
+COUCHBASE_CONFIG_PROFILE=wanDevelopment
+
+COUCHBASE_BUCKET=demo
+COUCHBASE_SCOPE=_default
+COUCHBASE_COLLECTION=_default
+
+# Couchbase scope
+COUCHBASE_SCOPE_DIRECTUS=directus
+
+# Couchbase collections
+COUCHBASE_COLLECTION_ALBUMS=albums
+COUCHBASE_COLLECTION_CHATS=chats
+COUCHBASE_COLLECTION_GAME=game
+COUCHBASE_COLLECTION_ANALYTICS=insights
+COUCHBASE_COLLECTION_LOGGING=logging
+COUCHBASE_COLLECTION_MUSIC=music
+COUCHBASE_COLLECTION_USERS=users
+COUCHBASE_COLLECTION_VECTORS=vectors
+
+# Game Configuration
+TOTAL_GAME_ROUNDS=10
+
+# Logging Configuration
+LOG_LEVEL=info  # error | warn | info | debug | silly
