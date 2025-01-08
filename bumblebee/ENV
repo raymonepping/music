@@ -1,0 +1,6 @@
+# Container name:
+CONTAINER_NAME=Bumblebee
+
+NODE_ENV=development
+VUE_APP_API_URL=http://springer:3000
+VITE_API_URL=http://springer:3000
