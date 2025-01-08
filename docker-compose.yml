@@ -1,0 +1,128 @@
+services:
+
+# Backend Services
+  springer:
+    build: ./springer
+    container_name: springer # brave and confident warrior with a bit of a sense of humor and a sarcastic edge.
+    labels:
+      - "category=backend"
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./springer/.env
+    networks:
+      - couchbase_directus
+
+# Frontend Services
+  bumblebee:
+    build:
+      context: ./bumblebee
+      dockerfile: Dockerfile
+    container_name: bumblebee # often seen on the front lines, especially in reconnaissance and scout roles.
+    labels:
+      - "category=frontend Vue.js"
+    profiles:
+      - frontend      
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./bumblebee/.env
+    networks:
+      - couchbase_directus
+    depends_on:
+      - springer
+    command: npm run dev -- --host --port 8080
+
+  sunstreaker:
+    build:
+      context: ./sunstreaker
+      dockerfile: Dockerfile
+    profiles:
+      - frontend
+    container_name: sunstreaker # a vain and flamboyant warrior with a shiny and polished appearance. Known for his speed, agility, and precision.
+    labels:
+      - "category=frontend Nuxt.js"
+    ports:
+      - "8085:8085"
+    env_file:
+      - ./sunstreaker/.env
+    networks:
+      - couchbase_directus
+    depends_on:
+      - springer
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8085
+    command: npm run dev
+
+  ironhide:
+    build:
+      context: ./ironhide
+      dockerfile: Dockerfile
+    profiles:
+      - frontend
+    container_name: ironhide # battle-hardened warrior often found on the front lines, serving as a specialist. Known for his toughness
+    labels:
+      - "category=frontend Nuxt.js"
+    ports:
+      - "8090:8090"
+    env_file:
+      - ./ironhide/.env
+    networks:
+      - couchbase_directus
+    depends_on:
+      - springer
+    command: npm run dev
+
+# Utility Services
+  grapple:
+    build:
+      context: ./grapple
+      dockerfile: Dockerfile
+    container_name: grapple # essential for utility-focused tasks like constructing fortifications
+    labels:
+      - "category=utilities"
+    restart: unless-stopped
+    env_file:
+      - ./grapple/.env
+    volumes:
+      - ./backups:/app/backups
+    networks:
+      - couchbase_directus
+    depends_on:
+      - springer
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  prowl:
+    build:
+      context: ./prowl
+      dockerfile: Dockerfile
+    container_name: prowl # strives to find reason and logic in everything. Analyze and advise on complex situations almost instantaneously.
+    labels:
+      - "category=analytics"
+    restart: unless-stopped
+    env_file:
+      - ./prowl/.env
+    volumes:
+      - ./logs:/app/logs      
+    networks:
+      - couchbase_directus
+    depends_on:
+      - springer
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  couchbase_directus:
+    driver: bridge
+
+volumes:
+  backups_data:
+    driver: local
