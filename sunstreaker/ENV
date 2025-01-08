@@ -1,0 +1,7 @@
+# Container name:
+CONTAINER_NAME=Sunstreaker
+
+NODE_ENV=development
+API_URL=http://springer:3000
+BROWSER_API_URL=http://springer:3000
+BASE_URL=http://springer:3000
