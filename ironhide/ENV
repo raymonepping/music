@@ -1,0 +1,6 @@
+# Container name:
+CONTAINER_NAME=Ironhide
+
+NODE_ENV=development
+API_URL=http://springer:3000
+BROWSER_API_URL=http://springer:3000
